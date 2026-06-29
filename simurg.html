@@ -1,11 +1,575 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Simurg Marine - OEKuipment</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simurg Marine — OEKuipment</title>
+
+  <!-- Fontlar index.html ile aynı — ikisini birden değiştirmen gerekir -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      /* ─── Renkler ────────────────────────────────────────────────────── */
+      /* — Logo — */
+      --logo-height: 100px;               /* OEKuipment logo yüksekliği (navbar) */
+
+      --bg:          #03030C;
+      --bg-1:        #07071A;
+      --border:      rgba(255,255,255,.08);
+      --nav-h:       76px;
+      --ease:        cubic-bezier(.4,0,.2,1);
+
+      /* ═══════════════════════════════════════════════════════════════════
+         KONTROL PANELİ  —  sadece buradan değiştir
+         ═══════════════════════════════════════════════════════════════════ */
+
+      /* — Renkler — */
+      --clr-accent:       #FF8C42;        /* vurgu rengi (başlıklar, linkler)  */
+      --clr-text:         #F0F0F0;        /* ana metin                         */
+      --clr-muted:        #F0F0F0;        /* soluk metin                       */
+      --clr-website:      #F0F0F0;        /* website link rengi                */
+      --clr-prod-name:    #F0F0F0;        /* product ismi rengi                */
+      --clr-prod-desc:    #F0F0F0;        /* product açıklama rengi            */
+      --clr-list-link:    #F0F0F0;        /* sol product listesi link rengi    */
+      --clr-list-hover:   #F0F0F0;        /* sol product listesi hover rengi   */
+
+      /* — Font boyutları — */
+      --fs-intro-text:    1rem;           /* giriş paragrafı                   */
+      --fs-website:       .85rem;         /* website linki                     */
+      --fs-prod-heading:  1.1rem;         /* "Products" başlığı                */
+      --fs-prod-list:     .95rem;         /* product listesi items             */
+      --fs-prod-name:     1.1rem;         /* section içi product ismi          */
+      --fs-prod-desc:     .95rem;         /* section içi product açıklaması    */
+      --fs-nav-brand:     .85rem;         /* navbar "Cosmo Yacht" yazısı       */
+      --fs-nav-link:      .78rem;         /* navbar linkleri                   */
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--clr-text);
+      font-family: 'Manrope', sans-serif;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--clr-accent); border-radius: 2px; }
+
+    /* ─── NAV ─────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6%;
+      background: rgba(3,3,12,.85);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo img { height: var(--logo-height); width: auto; display: block; }
+
+    .nav-right { display: flex; align-items: center; gap: 1.75rem; }
+
+    .nav-brand {
+      font-family: 'Manrope', sans-serif;
+      font-size: var(--fs-nav-brand); font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: #FF8C42;
+    }
+
+    .nav-back {
+      display: flex; align-items: center; gap: .4rem;
+      color: var(--clr-muted); text-decoration: none;
+      font-size: var(--fs-nav-link); font-weight: 500;
+      text-transform: uppercase; letter-spacing: .8px;
+      transition: color .25s;
+    }
+    .nav-back:hover { color: var(--clr-text); }
+
+    .dropdown { position: relative; }
+    .dropdown-toggle {
+      display: flex; align-items: center; gap: .35rem;
+      color: var(--clr-muted); text-decoration: none;
+      font-size: var(--fs-nav-link); font-weight: 500;
+      text-transform: uppercase; letter-spacing: .8px;
+      transition: color .25s; cursor: pointer;
+      background: none; border: none; padding: 0; font-family: 'Manrope', sans-serif;
+    }
+    .dropdown:hover .dropdown-toggle { color: var(--clr-text); }
+    .dchev { transition: transform .3s; }
+    .dropdown:hover .dchev { transform: rotate(180deg); }
+    .dropdown-menu {
+      position: absolute; top: calc(100% + 16px); left: 50%;
+      transform: translateX(-50%) translateY(-6px);
+      background: rgba(7,7,26,.97);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: .5rem; min-width: 190px; list-style: none;
+      opacity: 0; visibility: hidden;
+      transition: opacity .25s var(--ease), transform .25s var(--ease), visibility .25s;
+    }
+    .dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .dropdown-menu li a {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .55rem .9rem; border-radius: 10px;
+      color: var(--clr-muted); text-decoration: none; font-size: .82rem;
+      transition: background .2s, color .2s, padding-left .2s;
+    }
+    .dropdown-menu li a:hover { background: rgba(255,255,255,.04); color: var(--clr-text); padding-left: 1.2rem; }
+    .ddot { width: 5px; height: 5px; border-radius: 50%; background: linear-gradient(135deg, var(--clr-accent), #0077FF); flex-shrink: 0; }
+
+    /* ─── HERO (giriş bölümü) ─────────────────────────────────────────── */
+    .hero {
+      padding: calc(var(--nav-h) + 5rem) 6% 5rem;
+      background:
+        radial-gradient(ellipse 70% 60% at 10% 0%, rgba(0,196,255,.08) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    /* Sol: şirket tanıtımı */
+    .hero-left {}
+
+    .hero-intro {
+      font-size: var(--fs-intro-text);
+      color: var(--clr-text);
+      line-height: 1.9;
+      margin-bottom: .75rem;
+      max-width: 420px;
+      text-align: justify;
+    }
+
+    .hero-website {
+      display: block;
+      text-align: left;
+      font-size: var(--fs-website);
+      color: var(--clr-website);
+      text-decoration: none;
+      letter-spacing: 1px;
+      transition: opacity .2s;
+    }
+    .hero-website:hover { opacity: .75; }
+
+    /* Sağ: products listesi */
+    .hero-right {
+      padding-left: calc(16.666% - 0.25rem);
+      padding-right: calc(16.666% - 0.25rem);
+    }
+
+    .hero-brand-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: var(--fs-prod-heading);
+      font-weight: 700;
+      color: var(--clr-accent);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 1.5rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prod-list-heading {
+      font-family: 'Manrope', sans-serif;
+      font-size: var(--fs-prod-heading);
+      font-weight: 700;
+      color: var(--clr-accent);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 1.5rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prod-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .1rem;
+    }
+
+    .prod-list li a {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .65rem 0;
+      color: var(--clr-list-link);
+      text-decoration: none;
+      font-size: var(--fs-prod-list);
+      border-bottom: 1px solid var(--border);
+      transition: color .2s, padding-left .2s;
+    }
+    .prod-list li a::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--clr-accent);
+      flex-shrink: 0;
+      transition: transform .2s;
+    }
+    .prod-list li a:hover {
+      color: var(--clr-list-hover);
+      padding-left: .5rem;
+    }
+    .prod-list li a:hover::before { transform: scale(1.4); }
+
+    /* ─── PRODUCT SECTIONS ────────────────────────────────────────────── */
+    .prod-section {
+      padding: 6rem 6%;
+      border-top: 1px solid var(--border);
+    }
+
+    .prod-section:nth-child(even) { background: var(--bg-1); }
+
+    .prod-layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    /* Info sola, fotoğraflar sağa */
+    .prod-info  { order: 1; }
+    .prod-photos { order: 2; }
+
+    /* Sağ: 3 fotoğraf yan yana */
+    .prod-photos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+    }
+
+    .prod-photo {
+      aspect-ratio: 3/4;
+      background: rgba(0,196,255,.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .prod-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .prod-photo img:not([src]),
+    .prod-photo img[src=""] {
+      visibility: hidden;
+    }
+
+    /* Fotoğraf yokken gösterilen placeholder */
+    .photo-ph {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+      color: var(--clr-muted);
+      font-size: .7rem;
+      text-align: center;
+      padding: 1rem;
+      opacity: .5;
+    }
+
+    /* Sağ: isim + açıklama */
+    .prod-info {}
+
+    .prod-name {
+      font-family: 'Manrope', sans-serif;
+      font-size: var(--fs-prod-name);
+      font-weight: 700;
+      color: var(--clr-prod-name);
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+
+    .prod-desc {
+      font-size: var(--fs-prod-desc);
+      color: var(--clr-prod-desc);
+      line-height: 1.9;
+      text-align: justify;
+    }
+
+    ul.Features,
+    ul.Optional {
+      list-style: none;
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+    }
+
+    ul.Features::before,
+    ul.Optional::before {
+      font-family: 'Manrope', sans-serif;
+      font-size: var(--fs-prod-desc);
+      font-weight: 700;
+      color: var(--clr-prod-name);
+      display: block;
+      margin-bottom: .3rem;
+    }
+
+    ul.Features::before { content: "Features"; }
+    ul.Optional::before { content: "Optional"; }
+
+    ul.Features li,
+    ul.Optional li {
+      font-size: var(--fs-prod-desc);
+      color: var(--clr-prod-desc);
+      line-height: 1.75;
+      padding-left: .5rem;
+    }
+
+    ul.Features li::before,
+    ul.Optional li::before {
+      content: "- ";
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────────────────────── */
+    footer {
+      padding: 2rem 6%;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg);
+    }
+    .footer-logo {
+      font-family: 'Manrope', sans-serif; font-size: .95rem; font-weight: 700;
+    }
+    .footer-logo span {
+      color: #FF8C42;
+    }
+    footer small { font-size: .73rem; color: var(--clr-muted); }
+
+    /* ─── Responsive ──────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 3rem; }
+      .prod-layout { grid-template-columns: 1fr; }
+      .prod-photos { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 500px) {
+      .prod-photos { grid-template-columns: 1fr; }
+    }
+
+    /* ─── LIGHTBOX ────────────────────────────────────────────────────── */
+    .prod-photo img[src]:not([src=""]) { cursor: zoom-in; }
+
+    #lightbox {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,.88);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transition: opacity .25s var(--ease), visibility .25s;
+    }
+    #lightbox.open { opacity: 1; visibility: visible; }
+
+    #lightbox img {
+      max-width: 90vw; max-height: 88vh;
+      border-radius: 12px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.6);
+      object-fit: contain;
+      transform: scale(.94);
+      transition: transform .25s var(--ease);
+    }
+    #lightbox.open img { transform: scale(1); }
+
+    #lightbox-close {
+      position: absolute; top: 1.25rem; right: 1.5rem;
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 50%;
+      color: #fff; font-size: 1.2rem; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    #lightbox-close:hover { background: rgba(255,255,255,.18); }
+  </style>
 </head>
 <body>
-  <h1>Simurg Marine</h1>
-  <p>Safety equipment.</p>
-  <p><a href="index.html">Back to homepage</a></p>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="https://www.ndship.com/assets/img/logo_beyaz.png" alt="OEKuipment" />
+  </a>
+  <div class="nav-right">
+    <span class="nav-brand">Simurg Marine</span>
+    <div class="dropdown">
+      <button class="dropdown-toggle">
+        Other Brands
+        <svg class="dchev" width="11" height="11" viewBox="0 0 11 11" fill="none">
+          <path d="M2 3.5L5.5 7L9 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="cosmoyacht.html"><span class="ddot"></span>Cosmo Yacht</a></li>
+        <li><a href="white-lion.html"><span class="ddot"></span>White Lion Yachting</a></li>
+      </ul>
+    </div>
+    <a href="index.html" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M10 7H4M6 4L3 7L6 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back to Main
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+ <div class="hero-inner">
+  <div class="hero-left">
+    <p class="hero-brand-title">Simurg Marine</p>
+    <p class="hero-intro">Simurg Marine provides premium, SOLAS and MED-approved marine safety equipment engineered for the harshest offshore environments. Our reliable product range features highly visible C<SAFE lifebuoys, ATEX-certified C<MATE lights, C<VEST life jackets, and heavy-duty pilot ladders. Trusted by commercial vessels, yachts, and offshore platforms, these life-saving devices ensure absolute reliability and rapid detection during maritime emergencies</p>
+    <a href="https://www.simurgmarine.com" target="_blank" class="hero-website">www.simurgmarine.com</a>
+  </div>
+
+  <div class="hero-right">
+    <p class="prod-list-heading">Products</p>
+    <ul class="prod-list">
+      <!-- ── ÜRÜN LİSTESİ: her <li> bir section'a link ─────────────────
+           Yeni ürün eklemek için bu bloğu kopyala ve id'yi değiştir:
+           <li><a href="#urun-adi">Ürün Adı</a></li>
+      ────────────────────────────────────────────────────────────────── -->
+      <li><a href="#lb">Lifebuoys</a></li>
+      <li><a href="#pd">Lifebuoy Lights ATEX Certified</a></li>
+      <li><a href="#lj">Life Jackets</a></li>
+      <li><a href="#el">Embarkation Ladder</a></li>
+      <li><a href="#pl">Pilot Ladder</a></li>
+    </ul>
+  </div>
+ </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     ÜRÜN SECTİONLARI
+     Yeni ürün eklemek için aşağıdaki bloğu kopyala:
+     - id="urun-adi" → prod-list'teki href ile eşleşmeli
+     - .prod-name içindeki metni değiştir
+     - .prod-desc içindeki açıklamayı değiştir
+     - Her .prod-photo içine <img src="..." alt="..."> ekle
+════════════════════════════════════════════════════════════════════════ -->
+
+<section class="prod-section" id="lb">
+  <div class="prod-layout">
+    <div class="prod-photos">
+    </div>
+    <div class="prod-info">
+      <h2 class="prod-name">Lifebuoys</h2>
+      <p class="prod-desc">A life buoy CSAFE meticulously designed to meet the highest maritime safety standards. Crafted from ultra-durable materials, the buoy features a high-visibility orange outer shell and four evenly-spaced reflective bands to ensure rapid detection in emergency situations. Equipped with a quick-release system, integrated rope-attachment points and a UV- protected surface, it is built to perform reliably in harsh offshore conditions. Fully compliant with internationally recognized regulations such as SOLAS, and backed by certified quality assurance, this product delivers exceptional reliability and safety.
+Ideal for vessels, yachts and offshore platforms — the CSAFE life buoy goes beyond being a life-saving device; it embodies your brand’s commitment to maritime safety culture.</p>
+    </div>
+  </div>
+</section>
+
+<section class="prod-section" id="pd">
+  <div class="prod-layout">
+    <div class="prod-photos">
+
+    </div>
+    <div class="prod-info">
+      <h2 class="prod-name">Lifebuoy Lights ATEX Certified</h2>
+      <p class="prod-desc">This is crafted to meet the highest standards of maritime safety. Featuring an automatic water-activated flashing LED system, durable waterproof and corrosion-resistant housing, and SOLAS/MED-approved certification, it ensures outstanding visibility and reliability in critical situations. Built to perform on vessels, yachts and offshore platforms, the Life Buoy Light ensures dependable performance when every second counts.</p>
+
+    </div>
+  </div>
+</section>
+
+<section class="prod-section" id="lj">
+  <div class="prod-layout">
+    <div class="prod-photos">
+    </div>
+    <div class="prod-info">
+      <h2 class="prod-name">Life Jackets</h2>
+      <p class="prod-desc">Our life jacket is reliable,a MED-approved life jacket designed for professional maritime use. Built to comply with SOLAS requirements, it provides high buoyancy, excellent visibility, and dependable performance in emergency situations.
+Its durable construction and ergonomic fit ensure comfort during long hours on board, while allowing quick and easy donning when it matters most.
+Ideal for commercial vessels, passenger ships, and offshore operations. When safety is critical, choose Simurg C<VEST — trusted protection at sea Types: Adult , Child and Oversize</p>
+
+    </div>
+  </div>
+</section>
+
+<section class="prod-section" id="el">
+  <div class="prod-layout">
+    <div class="prod-photos">
+    </div>
+    <div class="prod-info">
+      <h2 class="prod-name">Embarkation Ladder</h2>
+      <p class="prod-desc">SIMURG MARINE’s embarkation ladder is designed for the most demanding maritime environments. Constructed from high-strength manila or synthetic-core ropes and durable hardwood or rubber- topped steps, it fully complies with the stringent requirements of International Convention for the Safety of Life at Sea (SOLAS) and the International Maritime Organization (IMO) standards. Designed for safe and reliable access between deck and waterline — in normal operations or emergency evacuation — this ladder is the trusted choice aboard yachts, commercial vessels and offshore platforms.</p>
+    </div>
+  </div>
+</section>
+
+<section class="prod-section" id="pl">
+  <div class="prod-layout">
+    <div class="prod-photos">
+    </div>
+    <div class="prod-info">
+      <h2 class="prod-name">Pilot Ladder</h2>
+      <p class="prod-desc">SIMURG MARINE’s pilot ladder is designed expressly for maritime operations to provide safe boarding and disembarkation of ship pilots — and on occasion other personnel — from a pilot boat to the deck of a vessel. Manufactured to meet the stringent requirements of SOLAS 1974 Chapter V Regulation 23 and ISO 799-1:2019, it features premium hardwood steps (with the lowest four steps reinforced with rubber), high-strength side ropes, and precision-designed spreader steps to prevent ladder twisting. Because marine transfer operations are inherently unpredictable, our certified and meticulously maintained pilot ladder is a critical component in ensuring safe access and protecting lives at sea.</p>
+
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  <div class="footer-logo"><span>OEKuipment</span> / Simurg Marine</div>
+  <small>© 2025 OEKuipment. All rights reserved.</small>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightbox-close" aria-label="Kapat">✕</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<script>
+  const lb     = document.getElementById('lightbox');
+  const lbImg  = document.getElementById('lightbox-img');
+  const lbClose = document.getElementById('lightbox-close');
+
+  document.querySelectorAll('.prod-photo img').forEach(img => {
+    img.addEventListener('click', () => {
+      if (!img.src || img.getAttribute('src') === '') return;
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeLightbox() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  lbClose.addEventListener('click', closeLightbox);
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+
 </body>
 </html>
