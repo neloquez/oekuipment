@@ -103,9 +103,11 @@
       transition: color .25s; cursor: pointer;
       background: none; border: none; padding: 0; font-family: 'Manrope', sans-serif;
     }
-    .dropdown:hover .dropdown-toggle { color: var(--clr-text); }
+    .dropdown:hover .dropdown-toggle,
+    .dropdown.open .dropdown-toggle { color: var(--clr-text); }
     .dchev { transition: transform .3s; }
-    .dropdown:hover .dchev { transform: rotate(180deg); }
+    .dropdown:hover .dchev,
+    .dropdown.open .dchev { transform: rotate(180deg); }
     .dropdown-menu {
       position: absolute; top: calc(100% + 16px); left: 50%;
       transform: translateX(-50%) translateY(-6px);
@@ -116,7 +118,8 @@
       opacity: 0; visibility: hidden;
       transition: opacity .25s var(--ease), transform .25s var(--ease), visibility .25s;
     }
-    .dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .dropdown:hover .dropdown-menu,
+    .dropdown.open .dropdown-menu { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
     .dropdown-menu li a {
       display: flex; align-items: center; gap: .5rem;
       padding: .55rem .9rem; border-radius: 10px;
@@ -446,7 +449,13 @@
       }
 
       .prod-photos {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: .55rem;
+      }
+
+      .prod-photo {
+        width: 100%;
+        min-width: 0;
       }
 
       footer {
@@ -827,6 +836,34 @@ Available in fixed or opening types, with sealing and finish quality consistent 
 </div>
 
 <script>
+  const dropdown = document.querySelector('.dropdown');
+  const dropdownToggle = document.querySelector('.dropdown-toggle');
+  const dropdownLinks = Array.from(document.querySelectorAll('.dropdown-menu a'));
+
+  if (dropdown && dropdownToggle) {
+    dropdownToggle.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+
+    dropdownLinks.forEach(link => {
+      link.addEventListener('click', () => dropdown.classList.remove('open'));
+    });
+
+    document.addEventListener('click', e => {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+      }
+    });
+  }
+
   const lb     = document.getElementById('lightbox');
   const lbImg  = document.getElementById('lightbox-img');
   const lbClose = document.getElementById('lightbox-close');
