@@ -1198,17 +1198,41 @@
     const subject = document.getElementById('cf-subject').value.trim() || 'OEKuipment Website Inquiry';
     const message = document.getElementById('cf-message').value.trim();
 
-    const body = [
-      'Name: ' + fname + ' ' + lname,
-      'Email: ' + email,
-      '',
-      message
-    ].join('\n');
+    const btn = e.target.querySelector('button[type="submit"]');
+    const btnLabel = btn.querySelector('span');
+    const originalLabel = btnLabel.textContent;
+    btnLabel.textContent = 'Sending…';
+    btn.disabled = true;
 
-    window.location.href =
-      'mailto:sales@oekuipment.com'
-      + '?subject=' + encodeURIComponent(subject)
-      + '&body='    + encodeURIComponent(body);
+    const fd = new FormData();
+    fd.append('First Name', fname);
+    fd.append('Last Name', lname);
+    fd.append('email', email);
+    fd.append('subject', subject);
+    fd.append('message', message);
+
+    fetch('https://formspree.io/f/xvzjblov', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: fd
+    })
+    .then(response => {
+      if (response.ok) {
+        btnLabel.textContent = 'Message Sent ✓';
+        e.target.reset();
+      } else {
+        btnLabel.textContent = 'Error — try again';
+      }
+    })
+    .catch(() => {
+      btnLabel.textContent = 'Error — try again';
+    })
+    .finally(() => {
+      setTimeout(() => {
+        btnLabel.textContent = originalLabel;
+        btn.disabled = false;
+      }, 3500);
+    });
   }
 
   const sc   = document.getElementById('sc');
